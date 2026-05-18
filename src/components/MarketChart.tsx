@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { CandlestickSeries, createChart, type IChartApi, type ISeriesApi, type UTCTimestamp } from 'lightweight-charts';
+import { AreaSeries, createChart, CrosshairMode, type IChartApi, type ISeriesApi, type UTCTimestamp } from 'lightweight-charts';
 import type { Candle } from '../types/market';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 export function MarketChart({ data, isDark }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const seriesRef = useRef<ISeriesApi<'Area'> | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -23,25 +23,39 @@ export function MarketChart({ data, isDark }: Props) {
         background: { color: isDark ? '#0f172a' : '#ffffff' },
         textColor: isDark ? '#cbd5e1' : '#334155',
       },
+      crosshair: {
+        mode: CrosshairMode.Magnet,
+        vertLine: {
+          color: isDark ? '#64748b' : '#94a3b8',
+          labelBackgroundColor: '#2563eb',
+        },
+        horzLine: {
+          color: isDark ? '#64748b' : '#94a3b8',
+          labelBackgroundColor: '#2563eb',
+        },
+      },
       grid: {
-        vertLines: { color: isDark ? '#1e293b' : '#e2e8f0' },
-        horzLines: { color: isDark ? '#1e293b' : '#e2e8f0' },
+        vertLines: { color: isDark ? '#182338' : '#eef2f7' },
+        horzLines: { color: isDark ? '#182338' : '#eef2f7' },
       },
       rightPriceScale: {
-        borderColor: isDark ? '#334155' : '#cbd5e1',
+        borderVisible: false,
       },
       timeScale: {
-        borderColor: isDark ? '#334155' : '#cbd5e1',
+        borderVisible: false,
         timeVisible: true,
       },
     });
 
-    const series = chart.addSeries(CandlestickSeries, {
-      upColor: '#22c55e',
-      downColor: '#ef4444',
-      borderVisible: false,
-      wickUpColor: '#22c55e',
-      wickDownColor: '#ef4444',
+    const series = chart.addSeries(AreaSeries, {
+      lineColor: '#1a73e8',
+      lineWidth: 2,
+      topColor: isDark ? 'rgba(26, 115, 232, 0.28)' : 'rgba(26, 115, 232, 0.18)',
+      bottomColor: isDark ? 'rgba(26, 115, 232, 0.02)' : 'rgba(26, 115, 232, 0.01)',
+      priceLineColor: '#1a73e8',
+      priceLineWidth: 1,
+      crosshairMarkerBackgroundColor: '#1a73e8',
+      crosshairMarkerBorderColor: isDark ? '#0f172a' : '#ffffff',
     });
 
     chartRef.current = chart;
@@ -62,10 +76,7 @@ export function MarketChart({ data, isDark }: Props) {
     seriesRef.current?.setData(
       data.map((candle) => ({
         time: candle.time as UTCTimestamp,
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
+        value: candle.close,
       })),
     );
     chartRef.current?.timeScale().fitContent();
