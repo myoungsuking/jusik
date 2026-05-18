@@ -48,6 +48,7 @@ export function SymbolSearch({ onSelect }: Props) {
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
+          onClick={() => setIsOpen(true)}
           onBlur={() => window.setTimeout(() => setIsOpen(false), 120)}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && query.trim()) {

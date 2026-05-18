@@ -6,3 +6,6 @@ dist/
 .vite/
 logs/
 .dev-server.pid
+jusik/
+logs/
+.dev-server.pid
